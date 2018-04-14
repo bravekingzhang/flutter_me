@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'douban_move_model.dart';
 import 'StarRating.dart';
+import 'config.dart';
 
 class DoubanMoveList extends StatefulWidget {
   final VoidCallback voidCallback;
