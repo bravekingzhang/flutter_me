@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'douban_move_model.dart';
-import 'StarRating.dart';
-import 'config.dart';
+import 'package:douban_me/model/douban_move_model.dart';
+import 'package:douban_me/widget/StarRating.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'imageDetail.dart';
 
 class DoubanMoveList extends StatefulWidget {
   final VoidCallback voidCallback;
@@ -21,7 +22,8 @@ class _DoubanMoveListState extends State<DoubanMoveList> {
     return new Container(
         child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: widget.mDoubanItem.length, itemBuilder: buildItem));
+            itemCount: widget.mDoubanItem.length,
+            itemBuilder: buildItem));
   }
 
   Widget buildItem(BuildContext context, int index) {
@@ -94,13 +96,13 @@ class _DoubanMoveListState extends State<DoubanMoveList> {
                           top: 8.0, left: 8.0, bottom: 8.0),
                       child: new Text(
                         widget.mDoubanItem[index].directors[0].name,
-                        style: new TextStyle(fontSize: 10.0),
+                        style: new TextStyle(
+                            fontSize: 10.0, fontWeight: FontWeight.bold),
                       ),
                     ),
                     new Text(
                       '领衔主演',
-                      style: new TextStyle(
-                          fontSize: 15.0, fontWeight: FontWeight.bold),
+                      style: new TextStyle(fontSize: 15.0),
                     ),
                     new Container(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -112,12 +114,26 @@ class _DoubanMoveListState extends State<DoubanMoveList> {
                 ),
               ),
               new Container(
-                margin: EdgeInsets.only(right: 15.0, bottom: 8.0),
-                width: 80.0,
-                height: 120.0,
-                child: new Image.network(
-                    widget.mDoubanItem[index].images["large"]),
-              )
+                  margin: EdgeInsets.only(right: 15.0, bottom: 8.0),
+                  width: 80.0,
+                  height: 120.0,
+                  child: new GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) => new ImageDetail(
+                                    image: widget
+                                        .mDoubanItem[index].images["large"],
+                                  )));
+                    },
+                    child: new CachedNetworkImage(
+                      imageUrl: widget.mDoubanItem[index].images["large"],
+                      errorWidget: new Icon(Icons.error),
+                      fadeOutDuration: new Duration(seconds: 1),
+                      fadeInDuration: new Duration(seconds: 3),
+                    ),
+                  ))
             ],
           )
         ],
@@ -165,13 +181,27 @@ class _DoubanMoveListState extends State<DoubanMoveList> {
           new Container(
             width: 45.0,
             height: 45.0,
-            child: new Image.network(value.icons['large']),
+            child: new GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (context) => new ImageDetail(
+                              image: value.icons['large'],
+                            )));
+              },
+              child: new CachedNetworkImage(
+                  errorWidget: new Icon(Icons.error),
+                  fadeOutDuration: new Duration(seconds: 1),
+                  fadeInDuration: new Duration(seconds: 3),
+                  imageUrl: value.icons['large']),
+            ),
           ),
           new Padding(
             padding: const EdgeInsets.only(top: 4.0, bottom: 5.0),
             child: new Text(
               value.name,
-              style: new TextStyle(fontSize: 8.0),
+              style: new TextStyle(fontSize: 8.0, fontWeight: FontWeight.bold),
             ),
           )
         ],

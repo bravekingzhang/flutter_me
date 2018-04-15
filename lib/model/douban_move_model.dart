@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'douban_move_model.g.dart';
+part 'package:douban_me/model/douban_move_model.g.dart';
 
 @JsonSerializable()
 class DoubanModel extends Object with _$DoubanModelSerializerMixin {

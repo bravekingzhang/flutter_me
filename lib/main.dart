@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'douban_move_model.dart';
+import 'package:douban_me/model/douban_move_model.dart';
 import 'dart:convert';
 
-import 'douban_move_list.dart';
+import 'package:douban_me/page/douban_move_list.dart';
+import 'package:douban_me/page/duanzi_list.dart';
 
 void main() => runApp(new MyApp());
 
@@ -55,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: new Scaffold(
         appBar: new AppBar(
           title: new TabBar(
-            tabs: [new Text("豆瓣电影"), new Text("内涵段子")],
+            tabs: [new Text("豆瓣电影"), new Text("各种段子")],
             indicatorSize: TabBarIndicatorSize.label,
             indicatorWeight: 1.0,
           ),
@@ -67,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
               _getDoubanMoves(true);
             },
           ),
-          new Text("page2")
+          new DuanZiList(),
         ]),
       ),
     );
@@ -103,21 +104,27 @@ class _MyHomePageState extends State<MyHomePage> {
           this.start = this.mDoubans.length;
         });
       } else {
-        showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => AlertDialog(
-                  content: Text('网路错误'),
-                ));
+        showNetWorkErr();
       }
     } catch (exception) {
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => AlertDialog(
-                content: Text('网路错误'),
-              ));
+      showNetWorkErr();
     }
+  }
+
+  void showNetWorkErr() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => new Container(
+          width: 100.0,
+          height: 100.0,
+          padding: const EdgeInsets.all(8.0),
+          child: new Center(
+            child: AlertDialog(
+                  content: Text('网路错误'),
+                ),
+          ),
+        ));
   }
 
   void showLoading() {
@@ -125,17 +132,20 @@ class _MyHomePageState extends State<MyHomePage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => new Dialog(
-            child: new Container(
-              alignment: Alignment.center,
-              width: 100.0,
-              height: 100.0,
-              child: new Stack(
-                children: <Widget>[
-                  new CircularProgressIndicator(),
-                  new Text('loading....')
-                ],
+              child: new Container(
+                width: 100.0,
+                height: 150.0,
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    new CircularProgressIndicator(),
+                    new Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: new Text('loading....'),
+                    )
+                  ],
+                ),
               ),
-            ),
           ),
     );
   }
