@@ -181,6 +181,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.0"
+  flutter_html_textview:
+    dependency: "direct main"
+    description:
+      name: flutter_html_textview
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter

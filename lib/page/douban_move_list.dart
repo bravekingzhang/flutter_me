@@ -3,13 +3,14 @@ import 'package:flutter/widgets.dart';
 import 'package:douban_me/model/douban_move_model.dart';
 import 'package:douban_me/widget/StarRating.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'imageDetail.dart';
+import 'image_detail.dart';
+import 'package:douban_me/widget/utils.dart';
+import 'dart:io';
+import 'dart:convert';
 
 class DoubanMoveList extends StatefulWidget {
-  final VoidCallback voidCallback;
-  final List<DoubanModel> mDoubanItem;
 
-  const DoubanMoveList({Key key, this.mDoubanItem, this.voidCallback})
+  const DoubanMoveList({Key key})
       : super(key: key);
 
   @override
@@ -17,19 +18,27 @@ class DoubanMoveList extends StatefulWidget {
 }
 
 class _DoubanMoveListState extends State<DoubanMoveList> {
+  int start = 0;
+  List<DoubanModel> mDoubanList  = new List();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getDoubanMoves(false);
+  }
   @override
   Widget build(BuildContext context) {
     return new Container(
         child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: widget.mDoubanItem.length,
+            itemCount: mDoubanList.length,
             itemBuilder: buildItem));
   }
 
   Widget buildItem(BuildContext context, int index) {
-    if (index == widget.mDoubanItem.length - 1) {
+    if (index == mDoubanList.length - 1) {
       //已经加载了最后一个元素了，现在加载更多
-      widget.voidCallback();
+      _getDoubanMoves(true);
     }
     return new Card(
       child: new Column(
@@ -44,18 +53,18 @@ class _DoubanMoveListState extends State<DoubanMoveList> {
                     new Row(
                       children: <Widget>[
                         new Text.rich(
-                          new TextSpan(text: widget.mDoubanItem[index].title),
+                          new TextSpan(text: mDoubanList[index].title),
                           style: new TextStyle(fontSize: 18.0),
                         ),
                         new Padding(
                           padding: const EdgeInsets.only(left: 8.0),
-                          child: buildRating(widget.mDoubanItem[index]),
+                          child: buildRating(mDoubanList[index]),
                         ),
                       ],
                     ),
                     new Container(
                       padding: const EdgeInsets.only(top: 5.0),
-                      child: buildMoveTag(widget.mDoubanItem[index]),
+                      child: buildMoveTag(mDoubanList[index]),
                     )
                   ],
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +74,7 @@ class _DoubanMoveListState extends State<DoubanMoveList> {
                 margin: EdgeInsets.only(right: 15.0),
                 child: new Text.rich(
                   new TextSpan(
-                      text: '${widget.mDoubanItem[index].rating.average}'),
+                      text: '${mDoubanList[index].rating.average}'),
                   style: new TextStyle(fontSize: 32.0, color: Colors.blue),
                 ),
               ),
@@ -95,7 +104,7 @@ class _DoubanMoveListState extends State<DoubanMoveList> {
                       padding: const EdgeInsets.only(
                           top: 8.0, left: 8.0, bottom: 8.0),
                       child: new Text(
-                        widget.mDoubanItem[index].directors[0].name,
+                        mDoubanList[index].directors[0].name,
                         style: new TextStyle(
                             fontSize: 10.0, fontWeight: FontWeight.bold),
                       ),
@@ -107,7 +116,7 @@ class _DoubanMoveListState extends State<DoubanMoveList> {
                     new Container(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: new Row(
-                        children: buildActors(widget.mDoubanItem[index].casts),
+                        children: buildActors(mDoubanList[index].casts),
                       ),
                     )
                   ],
@@ -123,12 +132,11 @@ class _DoubanMoveListState extends State<DoubanMoveList> {
                           context,
                           new MaterialPageRoute(
                               builder: (context) => new ImageDetail(
-                                    image: widget
-                                        .mDoubanItem[index].images["large"],
+                                    image: mDoubanList[index].images["large"],
                                   )));
                     },
                     child: new CachedNetworkImage(
-                      imageUrl: widget.mDoubanItem[index].images["large"],
+                      imageUrl: mDoubanList[index].images["large"],
                       errorWidget: new Icon(Icons.error),
                       fadeOutDuration: new Duration(seconds: 1),
                       fadeInDuration: new Duration(seconds: 3),
@@ -208,5 +216,57 @@ class _DoubanMoveListState extends State<DoubanMoveList> {
       ));
     }
     return list;
+  }
+  _getDoubanMoves(loadMore) async {
+    if (!loadMore) {
+      showLoading(context);
+    }
+    var pageCount = 10;
+    var url =
+        'https://api.douban.com/v2/movie/in_theaters?apikey=0b2bdeda43b5688921839c8ecb20399b&start=$start&count=$pageCount&client=&udid=';
+    var httpClient = new HttpClient();
+
+    try {
+      var request = await httpClient.getUrl(Uri.parse(url));
+      var response = await request.close();
+      if (response.statusCode == HttpStatus.OK) {
+        var jsonString = await response.transform(utf8.decoder).join();
+        var data = json.decode(jsonString);
+        List moves = data['subjects'];
+        List<DoubanModel> items = new List();
+        for (var value in moves) {
+          items.add(new DoubanModel.fromJson(value));
+        }
+        setState(() {
+          if (start == 0) {
+            Navigator.pop(context);
+            this.mDoubanList = items;
+          } else {
+            this.mDoubanList.addAll(items);
+          }
+          this.start = this.mDoubanList.length;
+        });
+      } else {
+        showNetWorkErr();
+      }
+    } catch (exception) {
+      showNetWorkErr();
+    }
+  }
+
+  void showNetWorkErr() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => new Container(
+          width: 100.0,
+          height: 100.0,
+          padding: const EdgeInsets.all(8.0),
+          child: new Center(
+            child: AlertDialog(
+              content: Text('网路错误'),
+            ),
+          ),
+        ));
   }
 }

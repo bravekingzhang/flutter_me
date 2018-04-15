@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:douban_me/model/douban_move_model.dart';
-import 'dart:convert';
 
-import 'package:douban_me/page/douban_move_list.dart';
-import 'package:douban_me/page/duanzi_list.dart';
+import 'package:douban_me/page/squre_page.dart';
+import 'package:douban_me/page/find_page.dart';
 
 void main() => runApp(new MyApp());
 
@@ -35,118 +32,37 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var start = 0;
-  List<DoubanModel> mDoubans = new List();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _getDoubanMoves(false);
-  }
+  int mCurrentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    return buildDefaultTabController();
-  }
-
-  DefaultTabController buildDefaultTabController() {
-    return new DefaultTabController(
-      length: 2,
-      child: new Scaffold(
-        appBar: new AppBar(
-          title: new TabBar(
-            tabs: [new Text("豆瓣电影"), new Text("各种段子")],
-            indicatorSize: TabBarIndicatorSize.label,
-            indicatorWeight: 1.0,
-          ),
-        ),
-        body: new TabBarView(children: [
-          new DoubanMoveList(
-            mDoubanItem: mDoubans,
-            voidCallback: () {
-              _getDoubanMoves(true);
-            },
-          ),
-          new DuanZiList(),
-        ]),
+    return new Scaffold(
+      bottomNavigationBar: new BottomNavigationBar(
+        items: [
+          new BottomNavigationBarItem(
+              icon: new Icon(Icons.star), title: new Text('广场')),
+          new BottomNavigationBarItem(
+              icon: new Icon(Icons.find_replace), title: new Text('发现'))
+        ],
+        currentIndex: mCurrentIndex,
+        onTap: (index) {
+          setState(() {
+            mCurrentIndex = index;
+          });
+        },
       ),
+      body: _setupCurrentPage(mCurrentIndex),
     );
   }
 
-  _getDoubanMoves(loadMore) async {
-    if (!loadMore) {
-      showLoading();
+  Widget _setupCurrentPage(int mCurrentIndex) {
+    switch (mCurrentIndex) {
+      case 0:
+        return new SqurePage();
+      case 1:
+        return new FindPage();
+      default:
+        return new SqurePage();
     }
-    var pageCount = 10;
-    var url =
-        'https://api.douban.com/v2/movie/in_theaters?apikey=0b2bdeda43b5688921839c8ecb20399b&start=$start&count=$pageCount&client=&udid=';
-    var httpClient = new HttpClient();
-
-    try {
-      var request = await httpClient.getUrl(Uri.parse(url));
-      var response = await request.close();
-      if (response.statusCode == HttpStatus.OK) {
-        var jsonString = await response.transform(utf8.decoder).join();
-        var data = json.decode(jsonString);
-        List moves = data['subjects'];
-        List<DoubanModel> items = new List();
-        for (var value in moves) {
-          items.add(new DoubanModel.fromJson(value));
-        }
-        setState(() {
-          if (start == 0) {
-            Navigator.pop(context);
-            this.mDoubans = items;
-          } else {
-            this.mDoubans.addAll(items);
-          }
-          this.start = this.mDoubans.length;
-        });
-      } else {
-        showNetWorkErr();
-      }
-    } catch (exception) {
-      showNetWorkErr();
-    }
-  }
-
-  void showNetWorkErr() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => new Container(
-          width: 100.0,
-          height: 100.0,
-          padding: const EdgeInsets.all(8.0),
-          child: new Center(
-            child: AlertDialog(
-                  content: Text('网路错误'),
-                ),
-          ),
-        ));
-  }
-
-  void showLoading() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => new Dialog(
-              child: new Container(
-                width: 100.0,
-                height: 150.0,
-                child: new Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    new CircularProgressIndicator(),
-                    new Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: new Text('loading....'),
-                    )
-                  ],
-                ),
-              ),
-          ),
-    );
   }
 }

@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'move_page.dart';
 import 'package:douban_me/widget/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'imageDetail.dart';
+import 'image_detail.dart';
 
 class DuanZiList extends StatefulWidget {
   @override
