@@ -1,2 +1,2 @@
-const showApiKey = "your key";
-const showApiSecret = "your secret";
+const showApiKey = "xxx";
+const showApiSecret = "xxxxxxxxxxxxxxxxxx";
