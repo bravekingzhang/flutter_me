@@ -36,6 +36,8 @@ For help getting started with Flutter, view our online
 ![image](https://user-images.githubusercontent.com/4476322/38778622-e107db04-40ee-11e8-817f-9b0fa1eeb180.png)
 
 上传的源码中已经打好了apk，可以直接下载安装，ipa包没有打，打了没有越狱一般也安装不了的，苹果这套对开发者不是很友好。
+![image](https://user-images.githubusercontent.com/4476322/38778902-09d5774a-40f3-11e8-90b7-b509ceb5e3e2.png)
+
 
 ### 注意事项
 
@@ -43,6 +45,7 @@ For help getting started with Flutter, view our online
 
 1. config.dart 是需要你在showApi平台上自己申请appid和secretkey的
 2. android工程中的key.properties文件中的value需要你自己配置你的秘钥，具体打包方式参考dart.io文档中 Build and release for Android 这一节。
+
 
 
 
