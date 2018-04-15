@@ -19,6 +19,7 @@ For help getting started with Flutter, view our online
 7. tab
 8. bottomNavigationBar
 9. 页面间的跳转。
+10. json2model代码自动生成
 
 ### 我这里遇到了一些坑
 1. 在ListView的item中使用横向ListView，导致运行不出来，因此那个换成了Row。
@@ -29,6 +30,14 @@ For help getting started with Flutter, view our online
 ### 以下是运行截图了
 
 ![2018-04-13 16_10_08](https://user-images.githubusercontent.com/4476322/38723932-3ec1b49c-3f35-11e8-9f6b-671d365437bf.gif)
+
+## 增加了段子页面
+你可以学会，
+1、弹框bottomModalDialog
+2、
+
+![2018-04-15 21_36_35](https://user-images.githubusercontent.com/4476322/38779028-1d95f460-40f5-11e8-8b8f-a49c5f1109cf.gif)
+
 
 ### 安装包
 
